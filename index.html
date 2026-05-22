@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-PT">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>✈️ Planeamento de Viagem</title>
+    <title>✈️ Planejamento de Viagem</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -64,7 +64,7 @@
 <body>
     <div class="container">
         <header>
-            <h1>✈️ Planeamento de Viagem</h1>
+            <h1>✈️ Planejamento de Viagem</h1>
         </header>
 
         <section class="resumo">
@@ -99,7 +99,7 @@
             </aside>
 
             <main class="painel">
-                <h2>Planilha de Custos <span id="status-carregando" style="font-size: 0.8rem; color: var(--azul); display: none;">(A sincronizar...)</span></h2>
+                <h2>Planilha de Custos <span id="status-carregando" style="font-size: 0.8rem; color: var(--azul); display: none;">(Sincronizando...)</span></h2>
                 <div class="tabela-container">
                     <table id="tabela-gastos">
                         <thead>
@@ -122,12 +122,14 @@
     </div>
 
     <script>
-// ==========================================
-        // 1. CONFIGURAÇÃO DO SUPABASE (COLE AQUI!)
+        // ==========================================
+        // 1. CONFIGURAÇÃO DO SUPABASE
         // ==========================================
         const supabaseUrl = 'https://fqgabqwyvutmocibybzd.supabase.co'; 
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZxZ2FicXd5dnV0bW9jaWJ5YnpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzOTkxODAsImV4cCI6MjA5NDk3NTE4MH0.MRQyIIUw7LAZFtzq6-yPS2lLB72F5a75eQtaYjujrSw'; 
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        
+        // Nome ajustado para não dar conflito!
+        const clienteSupabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
         // ==========================================
         // 2. LÓGICA DA APLICAÇÃO
@@ -201,14 +203,14 @@
 
         async function carregarGastos() {
             statusCarregando.style.display = 'inline';
-            const { data, error } = await supabase
+            const { data, error } = await clienteSupabase
                 .from('gastos')
                 .select('*')
                 .order('created_at', { ascending: false });
 
             if (error) {
                 console.error('Erro ao carregar:', error);
-                alert('Erro ao carregar dados. Verifique a URL e Chave do Supabase.');
+                alert('Erro ao carregar dados. Verifique o console do F12.');
             } else {
                 gastos = data;
                 renderizarTabela();
@@ -219,7 +221,7 @@
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             btnSalvar.disabled = true;
-            btnSalvar.innerText = 'A guardar...';
+            btnSalvar.innerText = 'Salvando...';
 
             const descricao = document.getElementById('descricao').value.trim();
             const valor = parseFloat(document.getElementById('valor').value);
@@ -230,14 +232,14 @@
                 valor: valor
             };
 
-            const { data, error } = await supabase
+            const { data, error } = await clienteSupabase
                 .from('gastos')
                 .insert([novoGasto])
                 .select();
 
             if (error) {
                 console.error('Erro ao guardar:', error);
-                alert('Erro ao guardar na base de dados!');
+                alert('Erro ao salvar no banco! Verifique se você desativou o RLS na sua tabela do Supabase.');
             } else {
                 gastos.unshift(data[0]); 
                 renderizarTabela();
@@ -252,10 +254,10 @@
         });
 
         window.removerGasto = async (id) => {
-            if(!confirm('Tem a certeza que deseja apagar?')) return;
+            if(!confirm('Tem certeza que deseja apagar?')) return;
             
             statusCarregando.style.display = 'inline';
-            const { error } = await supabase
+            const { error } = await clienteSupabase
                 .from('gastos')
                 .delete()
                 .eq('id', id);
