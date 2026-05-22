@@ -1,0 +1,105 @@
+/* =========================
+   BASE
+========================= */
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+body { min-height: 100vh; color: #e5e7eb; overflow-x: hidden; background: #070A12; }
+
+/* =========================
+   ANIMATED BACKGROUND
+========================= */
+.bg {
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(99,102,241,0.25), transparent 40%),
+      radial-gradient(circle at 80% 30%, rgba(236,72,153,0.20), transparent 40%),
+      radial-gradient(circle at 40% 80%, rgba(34,211,238,0.15), transparent 40%);
+    filter: blur(40px); z-index: -1;
+    animation: move 12s ease-in-out infinite alternate;
+}
+@keyframes move {
+    from { transform: translateY(-10px) scale(1); }
+    to { transform: translateY(10px) scale(1.05); }
+}
+
+/* =========================
+   APP LAYOUT
+========================= */
+.app { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+
+/* =========================
+   SIDEBAR
+========================= */
+.sidebar { background: rgba(255,255,255,0.03); border-right: 1px solid rgba(255,255,255,0.08); padding: 20px; backdrop-filter: blur(20px); }
+.logo { font-size: 18px; font-weight: 700; margin-bottom: 30px; white-space: nowrap; }
+.nav-item { padding: 10px; border-radius: 10px; margin-bottom: 8px; color: #9ca3af; cursor: pointer; transition: .2s; }
+.nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
+
+/* =========================
+   MAIN & CARDS
+========================= */
+.main { padding: 24px; }
+.topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.title { font-size: 22px; font-weight: 700; }
+.subtitle { font-size: 12px; color: #9ca3af; }
+
+.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px; }
+.card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 18px; backdrop-filter: blur(20px); position: relative; overflow: hidden; transition: .25s; }
+.card::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at top left, rgba(99,102,241,0.3), transparent 50%); opacity: 0; transition: .3s; }
+.card:hover { transform: translateY(-6px); border-color: rgba(99,102,241,0.4); }
+.card:hover::before { opacity: 1; }
+.card h3 { font-size: 12px; color: #9ca3af; margin-bottom: 8px; }
+.card p { font-size: 24px; font-weight: 700; }
+
+/* =========================
+   GRID CONTENT & FORM
+========================= */
+.grid { display: grid; grid-template-columns: 320px 1fr; gap: 16px; }
+.panel { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 16px; backdrop-filter: blur(20px); }
+.h-fit { height: fit-content; }
+.overflow-container { overflow-x: auto; }
+
+input { width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); background: rgba(0,0,0,0.2); color: white; outline: none; }
+button { width: 100%; padding: 10px; border-radius: 10px; border: none; background: linear-gradient(135deg,#6366f1,#ec4899); color: white; font-weight: 600; cursor: pointer; transition: .2s; }
+button:hover { transform: scale(1.03); }
+
+/* =========================
+   TABLE
+========================= */
+table { width: 100%; border-collapse: collapse; min-width: 400px; }
+th { text-align: left; font-size: 11px; color: #9ca3af; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+tr:hover { background: rgba(255,255,255,0.03); }
+.delete { color: #9ca3af; cursor: pointer; }
+.delete:hover { color: #fb7185; }
+.empty { padding: 20px; text-align: center; color: #6b7280; }
+
+/* =========================
+   📱 RESPONSIVIDADE (MOBILE)
+========================= */
+@media (max-width: 768px) {
+    .app { grid-template-columns: 1fr; }
+    
+    .sidebar { 
+        border-right: none; 
+        border-bottom: 1px solid rgba(255,255,255,0.08); 
+        display: flex; 
+        align-items: center; 
+        justify-content: space-between;
+        padding: 15px 20px;
+    }
+    
+    .logo { margin-bottom: 0; }
+    
+    .nav-links { 
+        display: flex; 
+        gap: 10px; 
+        overflow-x: auto; 
+        padding-bottom: 5px;
+    }
+    
+    .nav-item { margin-bottom: 0; white-space: nowrap; }
+    
+    .main { padding: 15px; }
+    .cards { grid-template-columns: 1fr; gap: 12px; }
+    .grid { grid-template-columns: 1fr; }
+}
