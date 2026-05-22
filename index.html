@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Travel Finance OS</title>
+<title> ✈ Custos de Viagem</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
@@ -258,15 +258,11 @@ tr:hover {
 
 <div class="app">
 
-<!-- SIDEBAR -->
 <div class="sidebar">
-    <div class="logo">✈ Travel OS</div>
+    <div class="logo">✈ Custos de Viagem</div>
     <div class="nav-item">Dashboard</div>
-    <div class="nav-item">Gastos</div>
-    <div class="nav-item">Relatórios</div>
 </div>
 
-<!-- MAIN -->
 <div class="main">
 
     <div class="topbar">
@@ -276,7 +272,6 @@ tr:hover {
         </div>
     </div>
 
-    <!-- CARDS -->
     <div class="cards">
         <div class="card">
             <h3>Orçamento</h3>
@@ -294,16 +289,15 @@ tr:hover {
         </div>
     </div>
 
-    <!-- CONTENT -->
     <div class="grid">
 
         <div class="panel">
             <h3>Novo gasto</h3>
             <br>
             <form id="form">
-                <input id="desc" placeholder="Descrição">
-                <input id="val" type="number" placeholder="Valor">
-                <button>Adicionar</button>
+                <input id="desc" placeholder="Descrição" required>
+                <input id="val" type="number" step="0.01" placeholder="Valor" required>
+                <button type="submit">Adicionar</button>
             </form>
         </div>
 
@@ -328,9 +322,10 @@ tr:hover {
 </div>
 
 <script>
-const supabase = window.supabase.createClient(
-"https://fqgabqwyvutmocibybzd.supabase.co",
-"SUA_KEY"
+// O NOME CORRIGIDO: clienteSupabase
+const clienteSupabase = window.supabase.createClient(
+    "https://fqgabqwyvutmocibybzd.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZxZ2FicXd5dnV0bW9jaWJ5YnpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzOTkxODAsImV4cCI6MjA5NDk3NTE4MH0.MRQyIIUw7LAZFtzq6-yPS2lLB72F5a75eQtaYjujrSw"
 );
 
 let gastos = [];
@@ -363,7 +358,7 @@ function render(){
 }
 
 async function load(){
-    const {data} = await supabase.from("gastos").select("*");
+    const {data} = await clienteSupabase.from("gastos").select("*").order('created_at', { ascending: false });
     gastos = data || [];
     render();
 }
@@ -371,19 +366,45 @@ async function load(){
 document.getElementById("form").addEventListener("submit", async e=>{
     e.preventDefault();
 
-    const descricao = desc.value;
-    const valor = val.value;
+    const descInput = document.getElementById("desc");
+    const valInput = document.getElementById("val");
+    
+    const descricao = descInput.value.trim();
+    const valor = parseFloat(valInput.value);
 
-    const {data} = await supabase.from("gastos")
-    .insert([{descricao, valor, data: new Date().toLocaleDateString()}])
+    if (!descricao || isNaN(valor)) return;
+
+    const btn = e.target.querySelector("button");
+    btn.innerText = "Salvando...";
+    btn.disabled = true;
+
+    const {data, error} = await clienteSupabase.from("gastos")
+    .insert([{
+        descricao: descricao, 
+        valor: valor, 
+        data: new Date().toLocaleDateString('pt-BR', {day: '2-digit', month: '2-digit'})
+    }])
     .select();
 
-    gastos.unshift(data[0]);
-    render();
+    if (error) {
+        console.error(error);
+        alert("Erro ao salvar! Verifique se desativou o RLS no Supabase.");
+    } else if (data) {
+        gastos.unshift(data[0]);
+        render();
+        descInput.value = "";
+        valInput.value = "";
+        descInput.focus();
+    }
+
+    btn.innerText = "Adicionar";
+    btn.disabled = false;
 });
 
 window.del = async (id)=>{
-    await supabase.from("gastos").delete().eq("id", id);
+    if(!confirm("Tem certeza que deseja apagar?")) return;
+    
+    await clienteSupabase.from("gastos").delete().eq("id", id);
     gastos = gastos.filter(g=>g.id != id);
     render();
 }
