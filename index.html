@@ -6,7 +6,10 @@
     <title>✈️ Planejamento de Viagem</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
+        /* O CSS continua exatamente o mesmo, dark mode bonitão! */
         :root {
             --bg-fundo: #111827; 
             --bg-card: #1f2937;  
@@ -19,180 +22,44 @@
             --verde: #34d399;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-fundo); color: var(--texto-primario); padding: 2rem 1rem; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        header h1 { font-size: 1.8rem; margin-bottom: 2rem; color: #fff; }
 
-        body {
-            background-color: var(--bg-fundo);
-            color: var(--texto-primario);
-            padding: 2rem 1rem;
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        header h1 {
-            font-size: 1.8rem;
-            margin-bottom: 2rem;
-            color: #fff;
-        }
-
-        /* Cards de Resumo */
-        .resumo {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--borda);
-            border-radius: 0.75rem;
-            padding: 1.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-        }
-
-        .card h2 {
-            font-size: 0.875rem;
-            color: var(--texto-secundario);
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-        }
-
-        .card p {
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-
+        .resumo { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .card { background-color: var(--bg-card); border: 1px solid var(--borda); border-radius: 0.75rem; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3); }
+        .card h2 { font-size: 0.875rem; color: var(--texto-secundario); font-weight: 500; margin-bottom: 0.5rem; }
+        .card p { font-size: 1.5rem; font-weight: 700; }
         .texto-vermelho { color: var(--vermelho) !important; }
         .texto-verde { color: var(--verde) !important; }
 
-        /* Layout Grid */
-        .layout-principal {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 2rem;
-        }
+        .layout-principal { display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; }
+        @media (max-width: 768px) { .layout-principal { grid-template-columns: 1fr; } }
+        .painel { background-color: var(--bg-card); border: 1px solid var(--borda); border-radius: 0.75rem; padding: 1.5rem; height: fit-content; }
+        .painel h2 { font-size: 1.125rem; margin-bottom: 1.5rem; }
 
-        @media (max-width: 768px) {
-            .layout-principal {
-                grid-template-columns: 1fr;
-            }
-        }
+        .grupo-input { margin-bottom: 1rem; }
+        .grupo-input label { display: block; font-size: 0.875rem; color: var(--texto-secundario); margin-bottom: 0.5rem; }
+        .grupo-input input { width: 100%; padding: 0.75rem; background-color: var(--bg-fundo); border: 1px solid var(--borda); border-radius: 0.5rem; color: #fff; outline: none; }
+        .grupo-input input:focus { border-color: var(--azul); }
+        
+        button { width: 100%; padding: 0.75rem; background-color: var(--azul); color: #fff; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+        button:hover { background-color: var(--azul-hover); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .painel {
-            background-color: var(--bg-card);
-            border: 1px solid var(--borda);
-            border-radius: 0.75rem;
-            padding: 1.5rem;
-            height: fit-content;
-        }
-
-        .painel h2 {
-            font-size: 1.125rem;
-            margin-bottom: 1.5rem;
-        }
-
-        /* Formulário */
-        .grupo-input {
-            margin-bottom: 1rem;
-        }
-
-        .grupo-input label {
-            display: block;
-            font-size: 0.875rem;
-            color: var(--texto-secundario);
-            margin-bottom: 0.5rem;
-        }
-
-        .grupo-input input {
-            width: 100%;
-            padding: 0.75rem;
-            background-color: var(--bg-fundo);
-            border: 1px solid var(--borda);
-            border-radius: 0.5rem;
-            color: #fff;
-            outline: none;
-        }
-
-        .grupo-input input:focus {
-            border-color: var(--azul);
-        }
-
-        button {
-            width: 100%;
-            padding: 0.75rem;
-            background-color: var(--azul);
-            color: #fff;
-            border: none;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        button:hover {
-            background-color: var(--azul-hover);
-        }
-
-        /* Tabela */
-        .tabela-container {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid var(--borda);
-        }
-
-        th {
-            color: var(--texto-secundario);
-            font-size: 0.875rem;
-            text-transform: uppercase;
-            font-weight: 500;
-        }
-
-        td {
-            font-size: 0.95rem;
-        }
-
+        .tabela-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--borda); }
+        th { color: var(--texto-secundario); font-size: 0.875rem; text-transform: uppercase; font-weight: 500; }
+        td { font-size: 0.95rem; }
         .alinhar-direita { text-align: right; }
         .alinhar-centro { text-align: center; }
 
-        .btn-remover {
-            background: none;
-            color: var(--texto-secundario);
-            padding: 0.25rem 0.5rem;
-            font-size: 1.2rem;
-            width: auto;
-        }
-
-        .btn-remover:hover {
-            color: var(--vermelho);
-            background: transparent;
-        }
-
-        .mensagem-vazia {
-            text-align: center;
-            padding: 3rem;
-            color: var(--texto-secundario);
-            border: 1px dashed var(--borda);
-            border-radius: 0.5rem;
-            margin-top: 1rem;
-        }
+        .btn-remover { background: none; color: var(--texto-secundario); padding: 0.25rem 0.5rem; font-size: 1.2rem; width: auto; }
+        .btn-remover:hover { color: var(--vermelho); background: transparent; }
+        
+        .mensagem-vazia { text-align: center; padding: 3rem; color: var(--texto-secundario); border: 1px dashed var(--borda); border-radius: 0.5rem; margin-top: 1rem; }
     </style>
 </head>
 <body>
@@ -228,12 +95,12 @@
                         <label for="valor">Valor (R$)</label>
                         <input type="number" id="valor" step="0.01" placeholder="0.00" required>
                     </div>
-                    <button type="submit">Adicionar</button>
+                    <button type="submit" id="btn-salvar">Adicionar</button>
                 </form>
             </aside>
 
             <main class="painel">
-                <h2>Planilha de Custos</h2>
+                <h2>Planilha de Custos <span id="status-carregando" style="font-size: 0.8rem; color: var(--azul); display: none;">(Sincronizando...)</span></h2>
                 <div class="tabela-container">
                     <table id="tabela-gastos">
                         <thead>
@@ -248,7 +115,7 @@
                             </tbody>
                     </table>
                     <div id="mensagem-vazia" class="mensagem-vazia">
-                        Sua planilha está vazia. Adicione um gasto para começar!
+                        Nenhum gasto encontrado na nuvem. Adicione um para começar!
                     </div>
                 </div>
             </main>
@@ -256,24 +123,25 @@
     </div>
 
     <script>
+        // ==========================================
+        // 1. CONFIGURAÇÃO DO SUPABASE (COLE AQUI!)
+        // ==========================================
+        const supabaseUrl = 'https://fqgabqwyvutmocibybzd.supabase.co/rest/v1/'; 
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZxZ2FicXd5dnV0bW9jaWJ5YnpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzOTkxODAsImV4cCI6MjA5NDk3NTE4MH0.MRQyIIUw7LAZFtzq6-yPS2lLB72F5a75eQtaYjujrSw'; 
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // ==========================================
+        // 2. LÓGICA DO APLICATIVO
+        // ==========================================
         const ORCAMENTO_TOTAL = 5000;
         let gastos = [];
 
         const form = document.getElementById('form-gasto');
-        const inputDescricao = document.getElementById('descricao');
-        const inputValor = document.getElementById('valor');
-        const listaGastos = document.getElementById('lista-gastos');
-        const mensagemVazia = document.getElementById('mensagem-vazia');
-        const tabelaGastos = document.getElementById('tabela-gastos');
-
-        const valorGasto = document.getElementById('valor-gasto');
-        const valorSaldo = document.getElementById('valor-saldo');
-
+        const btnSalvar = document.getElementById('btn-salvar');
+        const statusCarregando = document.getElementById('status-carregando');
+        
         const formatarMoeda = (valor) => {
-            return new Intl.NumberFormat('pt-BR', {
-                style: 'currency',
-                currency: 'BRL'
-            }).format(valor);
+            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
         };
 
         const obterDataAtual = () => {
@@ -282,10 +150,11 @@
         };
 
         const atualizarResumo = () => {
-            const total = gastos.reduce((acc, gasto) => acc + gasto.valor, 0);
+            const total = gastos.reduce((acc, gasto) => acc + Number(gasto.valor), 0);
             const saldo = ORCAMENTO_TOTAL - total;
 
-            valorGasto.innerText = formatarMoeda(total);
+            document.getElementById('valor-gasto').innerText = formatarMoeda(total);
+            const valorSaldo = document.getElementById('valor-saldo');
             valorSaldo.innerText = formatarMoeda(saldo);
 
             if (saldo < 0) {
@@ -298,6 +167,10 @@
         };
 
         const renderizarTabela = () => {
+            const listaGastos = document.getElementById('lista-gastos');
+            const mensagemVazia = document.getElementById('mensagem-vazia');
+            const tabelaGastos = document.getElementById('tabela-gastos');
+
             listaGastos.innerHTML = '';
 
             if (gastos.length === 0) {
@@ -309,66 +182,101 @@
 
                 gastos.forEach(gasto => {
                     const tr = document.createElement('tr');
-                    
                     tr.innerHTML = `
                         <td style="color: var(--texto-secundario)">${gasto.data}</td>
                         <td style="font-weight: 500">${gasto.descricao}</td>
                         <td class="alinhar-direita texto-vermelho font-semibold">${formatarMoeda(gasto.valor)}</td>
                         <td class="alinhar-centro">
-                            <button class="btn-remover" onclick="removerGasto(${gasto.id})" title="Excluir">✕</button>
+                            <button class="btn-remover" onclick="removerGasto('${gasto.id}')" title="Excluir">✕</button>
                         </td>
                     `;
-                    
                     listaGastos.appendChild(tr);
                 });
             }
-
             atualizarResumo();
         };
 
-        form.addEventListener('submit', (e) => {
+        // ==========================================
+        // 3. INTEGRAÇÃO COM O BANCO DE DADOS
+        // ==========================================
+
+        // Buscar dados da nuvem
+        async function carregarGastos() {
+            statusCarregando.style.display = 'inline';
+            const { data, error } = await supabase
+                .from('gastos')
+                .select('*')
+                .order('created_at', { ascending: false }); // Traz os mais recentes primeiro
+
+            if (error) {
+                console.error('Erro ao carregar:', error);
+                alert('Erro ao carregar dados. Verifique a URL e Chave do Supabase.');
+            } else {
+                gastos = data;
+                renderizarTabela();
+            }
+            statusCarregando.style.display = 'none';
+        }
+
+        // Adicionar novo gasto na nuvem
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
+            btnSalvar.disabled = true;
+            btnSalvar.innerText = 'Salvando...';
 
-            const descricao = inputDescricao.value.trim();
-            const valor = parseFloat(inputValor.value);
-
-            if (descricao === '' || isNaN(valor)) return;
+            const descricao = document.getElementById('descricao').value.trim();
+            const valor = parseFloat(document.getElementById('valor').value);
 
             const novoGasto = {
-                id: Date.now(),
                 data: obterDataAtual(),
                 descricao: descricao,
                 valor: valor
             };
 
-            gastos.unshift(novoGasto); 
-            salvarNoLocalStorage();
-            renderizarTabela();
+            const { data, error } = await supabase
+                .from('gastos')
+                .insert([novoGasto])
+                .select();
 
-            inputDescricao.value = '';
-            inputValor.value = '';
-            inputDescricao.focus();
+            if (error) {
+                console.error('Erro ao salvar:', error);
+                alert('Erro ao salvar no banco!');
+            } else {
+                gastos.unshift(data[0]); // Adiciona visualmente na tabela na hora
+                renderizarTabela();
+                
+                // Limpa formulário
+                document.getElementById('descricao').value = '';
+                document.getElementById('valor').value = '';
+                document.getElementById('descricao').focus();
+            }
+
+            btnSalvar.disabled = false;
+            btnSalvar.innerText = 'Adicionar';
         });
 
-        window.removerGasto = (id) => {
-            gastos = gastos.filter(gasto => gasto.id !== id);
-            salvarNoLocalStorage();
-            renderizarTabela();
-        };
+        // Deletar gasto da nuvem
+        window.removerGasto = async (id) => {
+            if(!confirm('Tem certeza que deseja apagar?')) return;
+            
+            statusCarregando.style.display = 'inline';
+            const { error } = await supabase
+                .from('gastos')
+                .delete()
+                .eq('id', id);
 
-        const salvarNoLocalStorage = () => {
-            localStorage.setItem('gastosVanilla', JSON.stringify(gastos));
-        };
-
-        const carregarDoLocalStorage = () => {
-            const dados = localStorage.getItem('gastosVanilla');
-            if (dados) {
-                gastos = JSON.parse(dados);
+            if (error) {
+                console.error('Erro ao deletar:', error);
+                alert('Erro ao excluir!');
+            } else {
+                gastos = gastos.filter(gasto => String(gasto.id) !== String(id));
+                renderizarTabela();
             }
-            renderizarTabela();
+            statusCarregando.style.display = 'none';
         };
 
-        carregarDoLocalStorage();
+        // Inicia o app puxando os dados do Supabase
+        carregarGastos();
     </script>
 </body>
 </html>
